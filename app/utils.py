@@ -69,8 +69,8 @@ def main2():
                 add_view_count(obj_task)
     
     threads = []
-    for i in range(2):
-        for obj_task in obj_task_li:
+    for obj_task in obj_task_li:
+        for i in range(obj_task.thread):
             thread = threading.Thread(target=process_task, args=(obj_task,))
             threads.append(thread)
             thread.start()
