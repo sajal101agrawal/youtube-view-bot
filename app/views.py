@@ -6,8 +6,14 @@ from .models import script_status, task
 from .utils import my_background_function
 # Create your views here.
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 class RunScript(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
     def get(self, request, *args, **kwargs):
         
         script_status_obj = script_status.objects.all()        
@@ -34,3 +40,24 @@ class RunScript(View):
             'status': 'success'
         }
         return JsonResponse(data)
+
+class fetch_view_count(View):
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        tasks = task.objects.all()
+        status=tasks[0].completed
+        views_completed=tasks[0].views
+        target_views=tasks[0].target 
+        thread=tasks[0].thread 
+        video_link=tasks[0].link      
+        
+        return JsonResponse({'Task Data':{
+            'completed':status,
+            'views_completed':views_completed,
+            'target_views':target_views,
+            'thread':thread,
+            'video_link':video_link}})
