@@ -18,41 +18,41 @@ def add_view_count(model_instance):
     model_instance.views += 1
     model_instance.save()
 
-def get_random_prx():
-    global lines
-    if not lines : 
-        with open('proxy-data-for-keywordlit-test.txt', 'r') as file: lines = file.readlines()
+# def get_random_prx():
+#     global lines
+#     if not lines : 
+#         with open('proxy-data-for-keywordlit-test.txt', 'r') as file: lines = file.readlines()
         
-    if lines :
-        return random.choice(lines)
-    else :
-        with open('proxy-data-for-keywordlit-test.txt', 'r') as file: lines = file.readlines()
-        return random.choice(lines)
+#     if lines :
+#         return random.choice(lines)
+#     else :
+#         with open('proxy-data-for-keywordlit-test.txt', 'r') as file: lines = file.readlines()
+#         return random.choice(lines)
 
-def work():
-    print('work function !')
+# def work():
+#     print('work function !')
 
-def main():
+# def main():
     
-    active_threads = set()
+#     active_threads = set()
 
-    def start_new_thread():
-        while True:
-            work(get_random_prx())
+#     def start_new_thread():
+#         while True:
+#             work(get_random_prx())
     
-    # Start the initial threads
-    with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
-        for i in range(num_threads):
-            future = executor.submit(start_new_thread)
-            active_threads.add(future)
+#     # Start the initial threads
+#     with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
+#         for i in range(num_threads):
+#             future = executor.submit(start_new_thread)
+#             active_threads.add(future)
 
-        # Monitor and replace completed threads
-        while True:
-            completed = concurrent.futures.wait(active_threads, return_when=concurrent.futures.FIRST_COMPLETED).done
-            for thread in completed:
-                active_threads.remove(thread)
-                new_thread = executor.submit(start_new_thread)
-                active_threads.add(new_thread)
+#         # Monitor and replace completed threads
+#         while True:
+#             completed = concurrent.futures.wait(active_threads, return_when=concurrent.futures.FIRST_COMPLETED).done
+#             for thread in completed:
+#                 active_threads.remove(thread)
+#                 new_thread = executor.submit(start_new_thread)
+#                 active_threads.add(new_thread)
 
 def main2():
     active_threads = set()

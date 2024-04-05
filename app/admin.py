@@ -5,7 +5,7 @@ from .models import *
 
 
 class taskAdmin(admin.ModelAdmin):
-    list_display = ['id','views','completed']
+    list_display = ['id','views','completed','created','updated']
 
 
 admin.site.register(task,taskAdmin)
