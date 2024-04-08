@@ -38,7 +38,7 @@ class scrapping_bot():
         # self.options.add_argument('--mute-audio')
         self.options.add_argument("--ignore-gpu-blocklist")
         self.options.add_argument('--disable-dev-shm-usage')
-        # self.options.add_argument('--headless')
+        self.options.add_argument('--headless')
 
         prefs = {"credentials_enable_service": True,
                 'profile.default_content_setting_values.automatic_downloads': 1,
@@ -51,6 +51,7 @@ class scrapping_bot():
         self.options.add_argument('--start-maximized')    
         self.options.add_argument('--disable-dev-shm-usage')
         self.options.add_argument("--ignore-certificate-errors")
+        self.options.add_argument('--ignore-ssl-errors')
         self.options.add_argument("--enable-javascript")
         self.options.add_argument("--enable-popup-blocking")
     
@@ -172,11 +173,13 @@ class scrapping_bot():
             chrome_options.add_argument('--ignore-certificate-errors')
             chrome_options.add_argument('--ignore-ssl-errors=yes')
             chrome_options.add_argument('--remote-debugging-pipe')
-            # chrome_options.add_argument('--headless')
+            chrome_options.add_argument('--disable-web-security')
+            chrome_options.add_argument('--headless')
             chrome_options.add_argument('--mute-audio') 
             chrome_options.add_argument("--enable-javascript")
             chrome_options.add_argument("--enable-popup-blocking")
-            # chrome_options.add_argument('--proxy-server=http://%s' % proxy)
+            chrome_options.add_argument('--proxy-server=http://%s' % proxy)
+            print('The chrome option with proxy --proxy-server=http://%s :' % proxy)
             self.driver = webdriver.Chrome(options=chrome_options,seleniumwire_options=sw_options)
             # time.sleep(2)
             print("passed this step")

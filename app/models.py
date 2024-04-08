@@ -15,6 +15,7 @@ class task(TimeStampModel):
     target = models.IntegerField(default=1000)
     views = models.IntegerField(default=0)
     completed = models.BooleanField(default = False)
+    request_id = models.CharField(max_length=100)
     
     def save(self, *args, **kwargs):
         if self.views >= self.target:
