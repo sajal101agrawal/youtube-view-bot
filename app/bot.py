@@ -16,7 +16,7 @@ lines = []
  
 class scrapping_bot():
 
-    def __init__(self,brazzers_bot = False):
+    def __init__(self):
         self.base_path = os.getcwd()
 
     def get_random_prx(self):
@@ -178,6 +178,12 @@ class scrapping_bot():
             chrome_options.add_argument('--mute-audio') 
             chrome_options.add_argument("--enable-javascript")
             chrome_options.add_argument("--enable-popup-blocking")
+# ------------------------------TO REDUCE BANDWIDTH -----------------------------------------------------------------
+            chrome_options.add_experimental_option("prefs", {
+                "profile.managed_default_content_settings.images": 2,  # Disable images
+                "profile.managed_default_content_settings.media_stream": 2,  # Disable media streaming
+            })
+# ------------------------------TO REDUCE BANDWIDTH -----------------------------------------------------------------
             chrome_options.add_argument('--proxy-server=http://%s' % proxy)
             print('The chrome option with proxy --proxy-server=http://%s :' % proxy)
             self.driver = webdriver.Chrome(options=chrome_options,seleniumwire_options=sw_options)
@@ -256,18 +262,104 @@ class scrapping_bot():
             print('Driver is closed !')
         except Exception as e: ...
         
-    def work(self,link : str):
-        if not link : return False
-        self.get_driver()
-        self.driver.get(link)
-        body = self.find_element('body','body',By.TAG_NAME)
-        if body :
-            body.send_keys(Keys.SPACE)        
-            self.random_sleep(a=5,b=9,reson='watching youtube videos')
-        self.CloseDriver()        
-        if not body : return False
-        return True
+    # def work(self,link : str):
+    #     if not link : return False
+    #     self.get_driver()
+    #     self.driver.get(link)
+    #     body = self.find_element('body','body',By.TAG_NAME)
+    #     if body :
+    #         body.send_keys(Keys.SPACE)        
+    #         self.random_sleep(a=5,b=9,reson='watching youtube videos')
+    #     self.CloseDriver()        
+    #     if not body : return False
+    #     return True
         
+    def work(self, link: str):
+        if not link:
+            return False
+        
+        self.get_driver()
+        
+        try:
+            self.driver.get(link)
+            body = self.find_element('body', 'body', By.TAG_NAME)
+            
+            if body:
+                body.send_keys(Keys.SPACE)
+                self.change_video_quality()
+                self.random_sleep(a=3, b=7, reson='watching youtube videos')
+                self.CloseDriver()
+                return True
+            else:
+                self.CloseDriver()
+                return False
+        except Exception as e:
+            print('Error during work:', e)
+            self.CloseDriver()
+            return False
+
+    # def change_video_quality(self):
+    #     gear_icon = self.find_element('gear_icon', 'ytp-settings-button', By.CLASS_NAME, timeout=5)
+    #     if gear_icon:
+    #         self.ensure_click(gear_icon)
+    #         # time.sleep(30)
+    #         video_quality_option = self.find_element('video_quality_option', 'ytp-menuitem', By.CLASS_NAME, timeout=5)
+    #         if video_quality_option:
+    #             self.ensure_click(video_quality_option)
+
+    # def change_video_quality_keys(self):
+    #     try:
+    #         # Simulate key presses to change video quality
+    #         self.driver.switch_to.active_element.send_keys(Keys.SHIFT + 'k')  # Open settings menu
+    #         time.sleep(1)
+    #         self.driver.switch_to.active_element.send_keys(Keys.ARROW_DOWN)  # Navigate to quality submenu
+    #         time.sleep(0.5)
+    #         self.driver.switch_to.active_element.send_keys(Keys.ENTER)  # Select quality submenu
+    #         time.sleep(0.5)
+    #         # Navigate to and select the lowest quality option
+    #         for _ in range(4):  # Press ARROW_DOWN to reach lowest quality
+    #             self.driver.switch_to.active_element.send_keys(Keys.ARROW_DOWN)
+    #             time.sleep(0.5)
+    #         self.driver.switch_to.active_element.send_keys(Keys.ENTER)  # Select lowest quality
+    #         print("Changed video quality to lowest")
+
+    #     except Exception as e:
+    #         print('Error changing video quality:', e)
+
+
+    def change_video_quality(self):
+        try:
+        # Simulate opening settings menu using 'k' key
+            self.driver.find_element(By.CSS_SELECTOR, ".ytp-settings-button").send_keys(Keys.SHIFT + 'k')
+            time.sleep(0.5)  # Wait for the settings menu to open
+
+            # Simulate navigating to the quality submenu using arrow keys
+            self.driver.switch_to.active_element.send_keys(Keys.ARROW_DOWN)  # Navigate down to quality submenu
+            time.sleep(0.5)  # Wait for the submenu to open
+            self.driver.switch_to.active_element.send_keys(Keys.ARROW_DOWN)  # Navigate to the quality option
+            time.sleep(0.5)  # Wait for the option to be highlighted
+            self.driver.switch_to.active_element.send_keys(Keys.ENTER)  # Select the quality option
+            self.driver.switch_to.active_element.send_keys(Keys.ARROW_DOWN)  # Navigate to the quality option
+            time.sleep(0.5)  # Wait for the option to be highlighted
+            self.driver.switch_to.active_element.send_keys(Keys.ARROW_DOWN)  # Navigate to the quality option
+            time.sleep(0.5)  # Wait for the option to be highlighted
+            self.driver.switch_to.active_element.send_keys(Keys.ENTER)  # Select the quality option
+            self.driver.switch_to.active_element.send_keys(Keys.ARROW_UP)
+            time.sleep(0.5)  # Wait for the next option to be highlighted
+            self.driver.switch_to.active_element.send_keys(Keys.ENTER)  # Select the highlighted quality
+            print("Changed video quality to lowest")
+
+        except Exception as e:
+            print(f"Error changing video quality: {e}")
+
+    def ensure_click(self, element):
+        try:
+            element.click()
+        except ElementNotInteractableException:
+            # self.random_sleep()
+            element.click()
+
+
 
 #-------------------------------------------NEW CODE ----------------------------------------------------------------------------
 
@@ -494,11 +586,11 @@ class scrapping_bot():
 #                 except ElementNotInteractableException:
 #                     pass
 
-#     def ensure_click(self, element):
-#         try:
-#             element.click()
-#         except ElementNotInteractableException:
-#             self.random_sleep()
-#             element.click()
+    # def ensure_click(self, element):
+    #     try:
+    #         element.click()
+    #     except ElementNotInteractableException:
+    #         self.random_sleep()
+    #         element.click()
 
 
