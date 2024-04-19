@@ -182,11 +182,30 @@ class scrapping_bot():
             chrome_options.add_experimental_option("prefs", {
                 "profile.managed_default_content_settings.images": 2,  # Disable images
                 "profile.managed_default_content_settings.media_stream": 2,  # Disable media streaming
+                "profile.managed_default_content_settings.javascript": 2,        # Disable JavaScript
+                "profile.managed_default_content_settings.fonts": 2,              # Disable fonts
+                "profile.managed_default_content_settings.cookies": 2,            # Block third-party cookies
+                "profile.default_content_setting_values.notifications": 2,        # Block notifications
+                "profile.managed_default_content_settings.stylesheets": 2,
+                "profile.managed_default_content_settings.plugins": 2,
+                "profile.managed_default_content_settings.cache": 1,
+                "profile.managed_default_content_settings.webgl": 2,
+                "profile.managed_default_content_settings.webrtc": 2,
+                "profile.managed_default_content_settings.favicon": 2,
+                "profile.managed_default_content_settings.third_party_cookies": 2,
+                "profile.block_third_party_cookies": True,
+                "profile.default_content_settings.popups": 0
             })
+
+            # Set a smaller browser window size to reduce resource load
+            chrome_options.add_argument('--window-size=800,600')
 # ------------------------------TO REDUCE BANDWIDTH -----------------------------------------------------------------
             chrome_options.add_argument('--proxy-server=http://%s' % proxy)
+            chrome_options.add_argument('--disable-gpu')  # Disable hardware acceleration
             print('The chrome option with proxy --proxy-server=http://%s :' % proxy)
             self.driver = webdriver.Chrome(options=chrome_options,seleniumwire_options=sw_options)
+            # self.driver.request_interceptor = lambda request: request.modify(upstream_kbps=50, downstream_kbps=500)
+            
             # time.sleep(2)
             print("passed this step")
         except Exception as e:
