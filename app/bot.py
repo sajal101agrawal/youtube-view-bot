@@ -10,7 +10,7 @@ import os
 import requests
 from selenium.webdriver.chrome.options import Options
 from seleniumwire import webdriver as sw_webdriver
-
+import pyautogui
 
 lines = []
  
@@ -38,7 +38,7 @@ class scrapping_bot():
         # self.options.add_argument('--mute-audio')
         self.options.add_argument("--ignore-gpu-blocklist")
         self.options.add_argument('--disable-dev-shm-usage')
-        self.options.add_argument('--headless')
+        # self.options.add_argument('--headless')
 
         prefs = {"credentials_enable_service": True,
                 'profile.default_content_setting_values.automatic_downloads': 1,
@@ -174,7 +174,7 @@ class scrapping_bot():
             chrome_options.add_argument('--ignore-ssl-errors=yes')
             chrome_options.add_argument('--remote-debugging-pipe')
             chrome_options.add_argument('--disable-web-security')
-            chrome_options.add_argument('--headless')
+            # chrome_options.add_argument('--headless')
             chrome_options.add_argument('--mute-audio') 
             chrome_options.add_argument("--enable-javascript")
             chrome_options.add_argument("--enable-popup-blocking")
@@ -182,7 +182,7 @@ class scrapping_bot():
             chrome_options.add_experimental_option("prefs", {
                 "profile.managed_default_content_settings.images": 2,  # Disable images
                 "profile.managed_default_content_settings.media_stream": 2,  # Disable media streaming
-                "profile.managed_default_content_settings.javascript": 2,        # Disable JavaScript
+                # "profile.managed_default_content_settings.javascript": 2,        # Disable JavaScript
                 "profile.managed_default_content_settings.fonts": 2,              # Disable fonts
                 "profile.managed_default_content_settings.cookies": 2,            # Block third-party cookies
                 "profile.default_content_setting_values.notifications": 2,        # Block notifications
@@ -198,7 +198,7 @@ class scrapping_bot():
             })
 
             # Set a smaller browser window size to reduce resource load
-            chrome_options.add_argument('--window-size=800,600')
+            # chrome_options.add_argument('--window-size=800,600')
 # ------------------------------TO REDUCE BANDWIDTH -----------------------------------------------------------------
             chrome_options.add_argument('--proxy-server=http://%s' % proxy)
             chrome_options.add_argument('--disable-gpu')  # Disable hardware acceleration
@@ -292,7 +292,180 @@ class scrapping_bot():
     #     self.CloseDriver()        
     #     if not body : return False
     #     return True
-        
+
+#------------------------------------------------------new code ------------------------------------------------------------------
+
+    def set_lowest_video_quality(self):
+            try:
+                # Inject JavaScript to set video quality to lowest
+                # self.driver.execute_script('''
+                #     var video = document.querySelector('video');
+                #     if (video) {
+                #         video.playbackRate = 0.25; // Optionally adjust playback rate
+                #         video.setPlaybackQuality('tiny'); // Set to lowest quality
+                #     }
+                # ''')
+
+                self.driver.execute_script('''
+                    var video = document.querySelector('video');
+                    if (video) {
+                        var availableQualities = video.getAvailableQualityLevels();
+                        if (availableQualities && availableQualities.length > 0) {
+                            // Find the lowest quality available (e.g., 'tiny', 'small', etc.)
+                            var lowestQuality = availableQualities[availableQualities.length - 1];  // Assuming lowest quality is at the end of the array
+                            video.setPlaybackQuality(lowestQuality);
+                        }
+                    }
+                ''')
+                print('Changed video quality to lowest')
+            except Exception as e:
+                print(f'Error changing video quality: {e}')
+
+
+    # def simulate_user_activity(self,a=6,b=10):
+    #     # Simulate user activity during video playback
+    #     try:
+    #         random_duration = random.randint(a, b)  # Random duration between 6 to 10 seconds
+    #         print(f'Simulating user activity for {random_duration} seconds...')
+            
+    #         # Simulate random user actions during the specified duration
+    #         end_time = time.time() + random_duration
+    #         while time.time() < end_time:
+    #             # Simulate random scrolling
+    #             pyautogui.scroll(random.randint(-100, 100))
+
+    #             # Simulate random mouse clicks
+    #             if random.random() < 0.33:  # 20% chance of mouse click
+    #                 pyautogui.click()
+
+    #             # Simulate random key presses
+    #             if random.random() < 0.15:  # 10% chance of key press
+    #                 random_key = random.choice(['left', 'right', 'up', 'down', 'enter', 'space'])
+                    
+    #                 if random_key == 'm':  # Mute audio (key: 'm')
+    #                     pyautogui.press('m')
+    #                     print('Muted audio')
+
+    #                 else:
+    #                     pyautogui.press(random_key)
+
+    #             # Simulate random volume adjustments
+    #             if random.random() < 0.1:  # 10% chance of volume adjustment
+    #                 # Adjust volume up (key: 'volumeup')
+    #                 if random.random() < 0.5:
+    #                     pyautogui.press('volumeup')
+    #                     print('Volume up')
+
+    #                 # Adjust volume down (key: 'volumedown')
+    #                 else:
+    #                     pyautogui.press('volumedown')
+    #                     print('Volume down')
+
+    #             # Randomly click a video link after a certain delay
+    #             if time.time() < end_time - 3:  # Click a link if at least 3 seconds remaining
+    #                 if random.random() < 0.05:  # 5% chance of clicking a link
+    #                     video_links = self.driver.find_elements(By.TAG_NAME, 'a')
+    #                     if video_links:
+    #                         random_link = random.choice(video_links)
+
+    #                         random_link.click()
+    #                         print('Clicked a random video link')
+
+    #             time.sleep(0.5)  # Wait a short interval between actions
+
+    #         print('User activity simulation completed.')
+    #     except Exception as e:
+    #         print('Error during user activity simulation:', e)
+
+    def simulate_user_activity(self, a=6, b=10):
+        # Simulate user activity during video playback
+        try:
+            random_duration = random.randint(a, b)  # Random duration between a and b seconds
+            print(f'Simulating user activity for {random_duration} seconds...')
+            
+            # Simulate random user actions during the specified duration
+            end_time = time.time() + random_duration
+            while time.time() < end_time:
+                # Simulate random scrolling (scroll up or down by a random amount)
+                self.scroll_random()
+
+                # Simulate random mouse clicks (click a random element with a certain probability)
+                if random.random() < 0.33:  # 33% chance of clicking
+                    self.click_random_element()
+
+                # Simulate random key presses (press a random key with a certain probability)
+                if random.random() < 0.15:  # 15% chance of key press
+                    self.press_random_key()
+
+                # Simulate random volume adjustments (adjust volume up or down with a certain probability)
+                if random.random() < 0.1:  # 10% chance of volume adjustment
+                    self.adjust_volume()
+
+                # Randomly click a video link after a certain delay
+                if time.time() < end_time - 3:  # Click a link if at least 3 seconds remaining
+                    if random.random() < 0.05:  # 5% chance of clicking a link
+                        self.click_random_video_link()
+
+                time.sleep(0.5)  # Wait a short interval between actions
+
+            print('User activity simulation completed.')
+        except Exception as e:
+            print('Error during user activity simulation:', e)
+
+
+    def scroll_random(self):
+        # Simulate random scrolling (scroll up or down by a random amount)
+        scroll_amount = random.randint(-100, 100)
+        self.driver.execute_script(f'window.scrollBy(0, {scroll_amount});')
+
+    def click_random_element(self):
+        # Simulate clicking a random element on the page
+        elements = self.driver.find_elements(By.XPATH, '//*[not(ancestor::a)]')  # Exclude links to avoid accidental navigation
+        if elements:
+            random_element = random.choice(elements)
+
+            # Scroll to the random element
+            self.driver.execute_script('arguments[0].scrollIntoView(true);', random_element)
+            # Wait for the element to be clickable
+            WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.XPATH, random_element)))
+
+            random_element.click()
+            print('Clicked a random element')
+
+    def press_random_key(self):
+        # Simulate pressing a random key (can be any key including letters, arrows, space, etc.)
+        random_key = random.choice(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'Space'])
+        body = self.driver.find_element(By.TAG_NAME, 'body')
+        body.send_keys(random_key)
+        print(f'Pressed key: {random_key}')
+
+    def adjust_volume(self):
+        # Simulate adjusting volume by sending volume up or volume down keys
+        if random.random() < 0.5:  # 50% chance of volume up
+            self.driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.ARROW_UP)
+            print('Volume up')
+        else:  # 50% chance of volume down
+            self.driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.ARROW_DOWN)
+            print('Volume down')
+
+    def click_random_video_link(self):
+        # Simulate clicking a random video link on the page
+        video_links = self.driver.find_elements(By.TAG_NAME, 'a')
+        if video_links:
+            random_link = random.choice(video_links)
+
+            # Scroll to the random video link
+            self.driver.execute_script('arguments[0].scrollIntoView(true);', random_link)
+            # Wait for the element to be clickable
+            WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable((By.TAG_NAME, 'a')))
+
+            random_link.click()
+            print('Clicked a random video link')
+    
+
+#------------------------------------------------------NEW CODE-------------------------------------------------------------------
+
+
     def work(self, link: str):
         if not link:
             return False
@@ -300,13 +473,27 @@ class scrapping_bot():
         self.get_driver()
         
         try:
+            # self.driver.set_network_conditions(
+            #     offline=False,  # Ensure the network is not offline
+            #     latency=5000,  # Set latency (ms) to introduce delay
+            #     download_throughput=500 * 1024,  # Set download speed (bytes/s)
+            #     upload_throughput=500 * 1024  # Set upload speed (bytes/s)
+            # )
             self.driver.get(link)
             body = self.find_element('body', 'body', By.TAG_NAME)
             
             if body:
+                print(body.text)
                 body.send_keys(Keys.SPACE)
-                self.change_video_quality()
-                self.random_sleep(a=3, b=7, reson='watching youtube videos')
+                time.sleep(3)
+                # self.change_video_quality()
+                # self.random_sleep(a=6, b=10, reson='watching youtube videos')
+
+#------------------------------------------NEW CODE----------------------------------------------------------------------------
+                # self.set_lowest_video_quality()  # Set video quality to lowest
+                # Randomly simulate user activity during video playback
+                self.simulate_user_activity(a=6,b=10)
+#------------------------------------------NEW CODE----------------------------------------------------------------------------
                 self.CloseDriver()
                 return True
             else:
@@ -316,35 +503,6 @@ class scrapping_bot():
             print('Error during work:', e)
             self.CloseDriver()
             return False
-
-    # def change_video_quality(self):
-    #     gear_icon = self.find_element('gear_icon', 'ytp-settings-button', By.CLASS_NAME, timeout=5)
-    #     if gear_icon:
-    #         self.ensure_click(gear_icon)
-    #         # time.sleep(30)
-    #         video_quality_option = self.find_element('video_quality_option', 'ytp-menuitem', By.CLASS_NAME, timeout=5)
-    #         if video_quality_option:
-    #             self.ensure_click(video_quality_option)
-
-    # def change_video_quality_keys(self):
-    #     try:
-    #         # Simulate key presses to change video quality
-    #         self.driver.switch_to.active_element.send_keys(Keys.SHIFT + 'k')  # Open settings menu
-    #         time.sleep(1)
-    #         self.driver.switch_to.active_element.send_keys(Keys.ARROW_DOWN)  # Navigate to quality submenu
-    #         time.sleep(0.5)
-    #         self.driver.switch_to.active_element.send_keys(Keys.ENTER)  # Select quality submenu
-    #         time.sleep(0.5)
-    #         # Navigate to and select the lowest quality option
-    #         for _ in range(4):  # Press ARROW_DOWN to reach lowest quality
-    #             self.driver.switch_to.active_element.send_keys(Keys.ARROW_DOWN)
-    #             time.sleep(0.5)
-    #         self.driver.switch_to.active_element.send_keys(Keys.ENTER)  # Select lowest quality
-    #         print("Changed video quality to lowest")
-
-    #     except Exception as e:
-    #         print('Error changing video quality:', e)
-
 
     def change_video_quality(self):
         try:
